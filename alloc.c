@@ -150,7 +150,7 @@ static bool parent_is_split(size_t index)
 static void flip_parent_is_split(size_t index)
 {
     index = (index - 1) / 2;
-    /* TODO: add your code here */
+    node_is_split[index / 8] ^= 1 << (index % 8);
 }
 
 /*
@@ -163,7 +163,8 @@ static size_t bucket_for_request(size_t request)
     size_t size = MIN_ALLOC;
 
     while (size < request) {
-	/* TODO: add your code here */    
+        bucket--;
+        size *= 2;
     }
 
     return bucket;
@@ -205,7 +206,7 @@ static bool lower_bucket_limit(size_t bucket)
         if (!update_max_ptr(right_child + sizeof(list_t)))
             return false;
         list_push(&buckets[bucket_limit], (list_t *) right_child);
-	/* TODO: add your code here */
+        list_init(&buckets[--bucket_limit]);
 
         /*
          * Set the grandparent's SPLIT flag so if we need to lower the bucket
@@ -283,7 +284,7 @@ void *malloc(size_t request)
              */
             if (!lower_bucket_limit(bucket - 1))
                 return NULL;
-	    /* TODO: add your code here */
+            ptr = (uint8_t *) list_pop(&buckets[bucket]);
         }
 
         /*
@@ -386,7 +387,7 @@ void free(void *ptr)
          * add the merged parent to its free list yet. That will be done once
          * after this loop is finished.
          */
-	/* TODO: add your code here */
+        list_remove((list_t *) ptr_for_node(((i - 1) ^ 1) + 1, bucket));
         i = (i - 1) / 2;
         bucket--;
     }
