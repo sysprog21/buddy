@@ -232,6 +232,10 @@ void *malloc(size_t request)
      * possible allocation size. More memory will be reserved later as needed.
      */
     if (!base_ptr) {
+        /* FIXME: sbrk is deprecated on some platforms where mmap is suggested
+         * as a better replacement (macOS, FreeBSD). sbrk is generally
+         * onsidered quite archaic.
+         */
         base_ptr = max_ptr = (uint8_t *) sbrk(0);
         bucket_limit = BUCKET_COUNT - 1;
         update_max_ptr(base_ptr + sizeof(list_t));
